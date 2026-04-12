@@ -1,0 +1,87 @@
+\section{Methodology}
+
+The proposed methodology follows a pipeline-oriented approach designed to transform sparse, unstructured primary-care data into safe and explainable medication recommendations. The architecture is divided into four main phases: Data Acquisition and Preprocessing, Patient Representation Learning, Recommendation Logic and Safety Filtering, and Interpretability Mapping.
+
+\subsection{Data Acquisition and Preprocessing}
+The system first ingests clinical inputs which, in an outpatient setting, primarily consist of short-text symptom descriptions and basic structured attributes (age, sex, and known comorbidities).
+\begin{itemize}
+    \item \textbf{Text Normalization:} To handle the noise in primary-care notes, we apply spell-correction and expand medical abbreviations (e.g., ``SOB'' to ``Shortness of Breath'').
+    \item \textbf{Medical Entity Extraction:} Symptoms are mapped to standardized medical ontologies (e.g., SNOMED-CT or ICD-10) using a Named Entity Recognition (NER) layer to ensure semantic consistency.
+\end{itemize}
+
+\subsection{Patient Representation Learning}
+We utilize a multi-modal embedding strategy to capture the full context of a patient encounter:
+\begin{itemize}
+    \item \textbf{Symptom Encoding ($E_s$):} A lightweight Transformer-based encoder (Clinical DistilBERT) processes the normalized text to generate a dense semantic vector. This captures the nuance of patient complaints without the high latency of larger models.
+    \item \textbf{Feature Fusion:} Structured demographic data and categorical comorbidity flags are passed through a multi-layer perceptron (MLP) and concatenated with the symptom vector $E_s$. The resulting joint embedding, $P_v$, represents the comprehensive patient state.
+\end{itemize}
+
+\subsection{Recommendation Logic and Safety Layer}
+The recommendation process is framed as a multi-label classification problem, where the model predicts the probability of $N$ possible drug classes.
+\begin{itemize}
+    \item \textbf{Multi-Label Head:} The fusion vector $P_v$ is passed through a Sigmoid output layer. To account for dependencies between medications (e.g., certain drugs are frequently prescribed together), we apply a label-correlation regularizer during training.
+    \item \textbf{DDI-Aware Safety Filter:} Predicted candidates are passed through a graph-based safety filter. We construct a Drug-Drug Interaction (DDI) Graph using datasets like DrugBank. If the model suggests a combination with a high-risk interaction score, the safety layer either down-ranks the risky medication or flags it for clinician override.
+\end{itemize}
+
+\subsection{Interpretability and Feedback}
+To ensure clinical trust, the system generates dual-layered explanations:
+\begin{itemize}
+    \item \textbf{Saliency Mapping:} Using SHAP (SHapley Additive exPlanations), the model highlights specific words in the input symptoms that most influenced the recommendation.
+    \item \textbf{Safety Rationales:} For any flagged interactions, the system provides a knowledge-graph trace (e.g., ``Drug A and Drug B both inhibit enzyme CYP3A4''), offering a transparent reason for the safety alert.
+\end{itemize}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\linewidth]{figures/architecture.png}
+    \caption{Architecture Diagram detailing the four phases of the proposed medication recommendation methodology, including data flow, key modules, and the integrated safety and interpretability layers.}
+    \label{fig:architecture}
+\end{figure}
+
+\subsection{Medication Recommendation Algorithm}
+
+The workflow of the proposed deep learning based medication recommendation system is summarized in Algorithm~\ref{alg:medrec}. The algorithm processes patient symptom text and structured demographic features, learns a patient representation using neural encoders, and generates medication recommendations while ensuring safety through a drug--drug interaction filter.
+
+\begin{algorithm}[H]
+\caption{DL\_Medication\_Recommendation\_System}
+\label{alg:medrec}
+\begin{algorithmic}[1]
+
+\REQUIRE Patient symptom text $S$, structured data $D$ (age, sex, comorbidities), DDI graph $G$
+\ENSURE Safe medication recommendations $M_{safe}$ and explanation report $E$
+
+\STATE Collect patient symptoms $S$ and structured attributes $D$
+
+\STATE Preprocess symptoms using spell correction and abbreviation expansion
+
+\STATE Extract medical entities using Named Entity Recognition (NER)
+
+\STATE Convert extracted symptoms into standardized medical terms
+
+\STATE Generate symptom embedding $E_s$ using a transformer encoder
+
+\STATE Encode structured features $D$ using a multi-layer perceptron
+
+\STATE Fuse embeddings to obtain patient representation
+\[
+P_v = Concatenate(E_s, E_d)
+\]
+
+\STATE Predict medication probabilities using a neural classifier
+
+\STATE Select top-$k$ medications as candidate recommendations
+
+\STATE Apply drug--drug interaction filtering using graph $G$
+
+\STATE Generate explanation scores for model predictions
+
+\STATE \textbf{return} safe medications $M_{safe}$ and explanation report $E$
+
+\end{algorithmic}
+\end{algorithm}
+
+\section{Evaluation Plan}
+\begin{itemize}
+\item \textbf{Data:} Synthea synthetic outpatient encounters, augmented symptom–disease datasets, curated DrugBank/TWOSIDES for safety.
+\item \textbf{Metrics:} Disease-prediction (accuracy, macro-F1), medication recommendation (Jaccard index, MAP), DDI rate, clinician-rated explanation utility.
+\item \textbf{Ablation:} Encoder ablation, safety-layer ablation, explanation fidelity tests.
+\end{itemize}
