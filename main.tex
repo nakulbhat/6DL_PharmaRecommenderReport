@@ -14,6 +14,7 @@
 \usepackage{array}
 \usepackage{multirow}
 \usepackage{tabularx}
+\usepackage{pgfplots}
 \usepackage{balance}
 \usepackage{url}
 \usepackage{lipsum}
@@ -31,43 +32,46 @@
 \title{Deep Learning-Based Medication Recommendation System for Primary Care Decision Support}
 
 \author{
-\IEEEauthorblockN{Arnav Sahu\IEEEauthorrefmark{1},
-Hrithiq Gupta\IEEEauthorrefmark{1},
-Padavinangady Nakul Bhat\IEEEauthorrefmark{1},
-Pratyush Bhagat\IEEEauthorrefmark{1}}
-\IEEEauthorblockA{\IEEEauthorrefmark{1}Department of Computer Science and Engineering\\
-Manipal Institute of Technology, Manipal, India\\
-Email: arnav5.mitmpl2023@learner.manipal.edu\\ hrithiq.mitmpl2023@learner.manipal.edu\\
-nakul1.mitmpl2023@learner.manipal.edu\\
-pratyush3.mitmpl2023@learner.manipal.edu}
-}
+    \IEEEauthorblockN{Arnav Sahu\IEEEauthorrefmark{1},
+    Hrithiq Gupta\IEEEauthorrefmark{1},
+    Padavinangady Nakul Bhat\IEEEauthorrefmark{1},
+    Pratyush Bhagat\IEEEauthorrefmark{1}}
+    \IEEEauthorblockA{\IEEEauthorrefmark{1}Department of Computer Science and Engineering\\
+    Manipal Institute of Technology, Manipal, India\\
+    Email: arnav5.mitmpl2023@learner.manipal.edu\\ hrithiq.mitmpl2023@learner.manipal.edu\\
+    nakul1.mitmpl2023@learner.manipal.edu\\
+    pratyush3.mitmpl2023@learner.manipal.edu}
+    }
 
-\maketitle
-
-
-\input{sections/abstract.tex}
-
-\begin{IEEEkeywords}
-Medication recommendation, clinical decision support, graph neural networks, transformer, interpretability.
-\end{IEEEkeywords}
+    \maketitle
 
 
-\input{sections/introduction.tex}
-\input{sections/literature.tex}
+    \input{sections/abstract.tex}
+
+    \begin{IEEEkeywords}
+        Medication recommendation, clinical decision support, graph neural networks, transformer, interpretability.
+    \end{IEEEkeywords}
 
 
-\input{tables/literature_overview.tex}
-\FloatBarrier
+    \input{sections/introduction.tex}
+    \input{sections/literature.tex}
 
 
-\input{sections/methodology.tex}
-\input{sections/experimental_setup.tex}
+    \input{tables/literature_overview.tex}
+    \FloatBarrier
 
 
-\balance
+    \input{sections/methodology.tex}
+    \input{sections/experimental_setup.tex}
 
-\nocite{*}
-\bibliographystyle{ieeetr}
-\bibliography{references.bib}
+    \input{sections/results.tex}
+
+    \input{sections/discussion_and_conclusion.tex}
+
+    \balance
+
+    \nocite{*}
+    \bibliographystyle{ieeetr}
+    \bibliography{references.bib}
 
 \end{document}

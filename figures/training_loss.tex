@@ -1,0 +1,23 @@
+\begin{figure}[]
+    \centering
+
+    \begin{tikzpicture}
+        \begin{axis}[
+                grid=major,
+                legend entries = {
+                    CNN,
+                    BiLSTM,
+                    MLP,
+                    FusionNet,
+                    SelfAttention
+                },
+            ]
+            \addplot table {data/model_loss/CNN.dat};
+            \addplot table {data/model_loss/BiLSTM.dat};
+            \addplot table {data/model_loss/MLP.dat};
+            \addplot table {data/model_loss/FusionNet.dat};
+            \addplot table {data/model_loss/SelfAttention.dat};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Training Loss of various models across epochs.}\label{fig:train-loss}
+\end{figure}

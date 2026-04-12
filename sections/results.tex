@@ -1,0 +1,21 @@
+\section{Results}
+
+\subsection{Training Convergence}
+    \input{figures/training_loss.tex}
+Figure~\ref{fig:train-loss} shows the training loss curves for all five models across five epochs. The MLP exhibits the lowest absolute loss throughout training, beginning at 0.0035 and converging smoothly to 0.0031, which reflects the simplicity of its optimization landscape rather than superior generalization. The CNN and BiLSTM follow similar convergence trajectories, both reaching a final loss of approximately 0.0033 after starting at 0.0042 and 0.0057 respectively. FusionNet and SelfAttention begin with notably higher initial losses (0.0134 and 0.0100), indicating greater model complexity and a more challenging optimization surface, but both descend steeply in the first two epochs. FusionNet converges to 0.0035 by epoch four, while SelfAttention stabilizes at 0.0048, the highest final loss among all models. The faster loss reduction observed in FusionNet after the initial epochs suggests that its structured feature branch aids convergence once the text encoder begins to stabilize.
+
+\subsection{Multi-Label Classification Performance}
+
+\input{tables/results_model_metrics.tex}
+
+Table~\ref{tab:result-metrics} reports the full set of evaluation metrics across all models. FusionNet achieves the strongest overall performance, attaining the highest Jaccard index (0.7869), micro-precision (0.9252), micro-F1 (0.8808), and subset accuracy (0.6455), with a Hamming loss of 0.0010. BiLSTM performs comparably, ranking second on Jaccard (0.7796), micro-F1 (0.8762), and subset accuracy (0.6184). SelfAttention and CNN occupy an intermediate tier, with SelfAttention achieving marginally higher PRAUC (0.8764) and Precision@K (0.7114) than CNN and BiLSTM, suggesting that attention-based ranking is particularly effective for top-$k$ retrieval. The MLP baseline, while competitive on micro-precision (0.8853), lags considerably on subset accuracy (0.4210) and Jaccard (0.6887), indicating that flat feature representations are insufficient for accurate multi-label drug set prediction.
+
+Macro-averaged metrics are uniformly low across all models (F1\_macro $\approx$ 0.07--0.08), which is expected given the large and imbalanced drug vocabulary; many drug classes appear rarely in the training data, resulting in poor per-class recall for infrequent medications.
+
+\subsection{Ranking and Top-$K$ Performance}
+
+All models achieve high ROC-AUC scores ($>$ 0.993), confirming strong discriminative ability at the label level. PRAUC scores range from 0.8372 (MLP) to 0.8764 (SelfAttention), with CNN, BiLSTM, and FusionNet clustered closely around 0.874--0.875. At $k=5$, Precision@K ranges from 0.6855 (MLP) to 0.7114 (SelfAttention), while F1@K spans 0.5825 to 0.6052. The narrow spread in top-$K$ metrics among the four stronger models suggests that beyond a certain architectural threshold, marginal gains in ranking quality diminish, and other factors such as safety filtering and interpretability become the primary differentiators.
+
+\subsection{Summary}
+
+FusionNet emerges as the best-performing architecture overall, combining strong multi-label accuracy with the highest subset accuracy, making it the most suitable backbone for the proposed medication recommendation framework. Its explicit separation of text and structured feature encoding aligns well with the multi-modal nature of outpatient clinical data. SelfAttention offers competitive ranking performance and may be preferred in scenarios where top-$k$ precision is the primary concern. The MLP baseline, despite its simplicity, provides a reasonable lower bound and confirms that even shallow models benefit substantially from structured feature integration.
