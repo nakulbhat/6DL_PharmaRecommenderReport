@@ -1,40 +1,40 @@
 \section{Experimental Setup}
 
 \subsection{Dataset}
-Due to the absence of a single publicly available dataset containing all required clinical attributes, we constructed a synthetic yet clinically grounded dataset by integrating multiple publicly available sources. Symptom--disease mappings were sourced from a structured \texttt{symptom\_disease.csv} file, drug--disease associations from \texttt{drug\_disease.csv}, and known adverse drug pair interactions from \texttt{ddi.csv}. Demographic attributes such as age and gender were drawn from Synthea-generated synthetic patient records (\texttt{patients.csv}), with clinical encounter data used to inform realistic naming conventions and distributions.
+In the absence of a single publicly available dataset containing all required clinical attributes, a synthetic yet clinically grounded dataset was constructed by integrating multiple publicly available sources. Symptom--disease mappings were drawn from a structured \texttt{symptom\_disease.csv} file, drug--disease associations from \texttt{drug\_disease.csv}, and known adverse drug pair interactions from \texttt{ddi.csv}. Demographic attributes including age and sex were sourced from Synthea-generated synthetic patient records (\texttt{patients.csv}), with clinical encounter data informing realistic attribute distributions.
 
-A custom data generation pipeline was implemented to simulate realistic outpatient encounters. Each sample was constructed by randomly selecting one to two diseases from the disease vocabulary, sampling associated symptoms with variable-length lists and applying text augmentation techniques including synonym replacement (e.g., \textit{fever} $\rightarrow$ \textit{pyrexia}) and template-based sentence construction (e.g., ``patient reports \ldots'', ``complains of \ldots''). Medications were assigned via disease--drug mappings with fallback to global drug pool sampling. Drug combinations were filtered using the DDI dataset to remove pairs with known adverse interactions, and simple clinical rules were enforced (e.g., ibuprofen excluded for hypertensive patients). Each patient record includes structured attributes: age (sampled uniformly from 1--90 years), binary sex encoding, and a random subset of comorbidity flags (diabetes, hypertension, asthma). The final dataset comprises approximately 50,000 samples with multi-label medication outputs.
+A custom data generation pipeline was implemented to simulate realistic outpatient encounters. Each sample was constructed by randomly selecting one to two conditions from the disease vocabulary, sampling associated symptoms into variable-length lists, and applying text augmentation techniques including synonym replacement (e.g., \textit{fever} $\rightarrow$ \textit{pyrexia}) and template-based sentence construction (e.g., ``patient reports \ldots'', ``complains of \ldots''). Medications were assigned via disease--drug mappings, with fallback to global drug pool sampling where mappings were unavailable. Drug combinations were subsequently filtered using the DDI dataset to exclude pairs with known adverse interactions, and a set of clinical heuristics was enforced (e.g., exclusion of ibuprofen for hypertensive patients). Each record includes structured attributes comprising age (sampled uniformly over 1--90 years), binary sex encoding, and a randomly assigned subset of comorbidity flags (diabetes, hypertension, asthma). The resulting dataset comprises approximately 50,000 samples with multi-label medication outputs.
 
-Text preprocessing included lowercasing, removal of special characters, whitespace normalization, and drug alias standardization (e.g., \textit{acetaminophen} $\rightarrow$ \textit{paracetamol}). Disease name mismatches across sources were resolved via exact matching, substring matching, and fuzzy matching (via \texttt{difflib}) as a fallback. Non-clinical Synthea entries (e.g., ``Housing unsatisfactory'') were removed to retain only medically relevant conditions.
+Text preprocessing encompassed lowercasing, removal of special characters, whitespace normalization, and drug alias standardization (e.g., \textit{acetaminophen} $\rightarrow$ \textit{paracetamol}). Disease name discrepancies across sources were resolved through a cascade of exact matching, substring matching, and fuzzy matching via \texttt{difflib}. Non-clinical entries present in the Synthea records (e.g., ``Housing unsatisfactory'') were removed to retain only medically relevant conditions.
 
 \subsection{Models}
-Five neural architectures of increasing complexity were implemented and compared under identical training conditions to assess the contribution of different design choices to recommendation performance:
+Five neural architectures of increasing complexity were implemented and evaluated under identical training conditions to isolate the contribution of individual design choices to recommendation performance.
 
 \begin{itemize}
-    \item \textbf{MLP:} A baseline model that flattens token embeddings and concatenates structured features before a linear output layer.
-    \item \textbf{TextCNN:} A convolutional model applying 1D filters over token embeddings followed by adaptive max-pooling to capture local n-gram features.
-    \item \textbf{BiLSTM:} A bidirectional LSTM that processes the token sequence and concatenates the final hidden states from both directions with structured features.
-    \item \textbf{SelfAttention:} A single-head self-attention model that computes query--key--value attention over token embeddings and aggregates via mean pooling.
-    \item \textbf{FusionNet:} A hybrid model combining a unidirectional LSTM for text encoding with a dedicated MLP branch for structured features, whose outputs are concatenated prior to the final classifier.
+    \item \textbf{MLP:} A baseline model that flattens token embeddings and concatenates structured features prior to a linear output layer.
+    \item \textbf{TextCNN:} A convolutional architecture applying 1D filters over token embeddings followed by adaptive max-pooling to capture local $n$-gram features.
+    \item \textbf{BiLSTM:} A bidirectional LSTM that processes the full token sequence and concatenates the terminal hidden states from both directions with the structured feature vector.
+    \item \textbf{SelfAttention:} A single-head self-attention model that computes query--key--value attention over token embeddings and aggregates representations via mean pooling.
+    \item \textbf{FusionNet:} A hybrid architecture combining a unidirectional LSTM for text encoding with a dedicated MLP branch for structured feature processing, whose outputs are concatenated prior to the final classification layer.
 \end{itemize}
 
-All models share a common vocabulary-based tokenizer with a maximum sequence length of 20 tokens and a 64-dimensional word embedding layer. Structured inputs (age, sex, three comorbidity flags) form a 5-dimensional feature vector. All models output logits over the full drug vocabulary via a linear layer, with Binary Cross-Entropy with Logits loss used for multi-label training.
+All models share a common vocabulary-based tokenizer with a maximum sequence length of 20 tokens and a 64-dimensional word embedding layer. Structured inputs---comprising age, sex, and three comorbidity flags---form a 5-dimensional feature vector. All architectures produce logits over the full drug vocabulary via a linear projection layer, with Binary Cross-Entropy with Logits loss employed for multi-label training.
 
 \subsection{Training Configuration}
-All models were trained using the Adam optimizer with a learning rate of $1 \times 10^{-3}$ for 5 epochs with a batch size of 32. The dataset was split into 80\% training and 20\% test sets using a fixed random seed of 42. No validation set was held out during the comparative experiments; model selection is based on test-set evaluation after training convergence.
+All models were trained using the Adam optimizer with a learning rate of $1 \times 10^{-3}$ over 5 epochs with a batch size of 32. The dataset was partitioned into 80\% training and 20\% test sets using a fixed random seed of 42. No validation set was withheld during the comparative experiments; model selection is based on test-set performance following training convergence.
 
 \subsection{Evaluation Metrics}
-Model performance was assessed using a comprehensive set of multi-label classification metrics computed on the held-out test set. Threshold-based metrics were computed at a decision threshold of 0.5, while ranking metrics were computed at $k = 5$ by default. The following metrics were used:
+Model performance was assessed using a comprehensive suite of multi-label classification metrics computed on the held-out test set. Threshold-dependent metrics were computed at a decision threshold of 0.5; ranking metrics were computed at $k = 5$ by default. The following metrics were employed:
 
 \begin{itemize}
-    \item \textbf{Jaccard Index:} Ratio of the intersection to the union of predicted and ground-truth drug sets.
-    \item \textbf{Micro / Macro F1, Precision, Recall:} Standard multi-label classification metrics aggregated at both the instance and class levels.
-    \item \textbf{Hamming Loss:} Fraction of incorrectly predicted labels.
-    \item \textbf{Subset Accuracy:} Fraction of samples where the predicted label set exactly matches the ground truth.
-    \item \textbf{ROC-AUC (micro):} Area under the receiver operating characteristic curve aggregated across all drug classes.
-    \item \textbf{PR-AUC:} Area under the precision--recall curve, computed using sample-averaged average precision.
-    \item \textbf{Precision@K, Recall@K, F1@K:} Top-$k$ ranking metrics evaluating the quality of the top-5 predicted medications per patient.
-    \item \textbf{DDI Rate:} Fraction of predicted drug pairs in the top-$k$ recommendations that correspond to known adverse interactions in the DDI dataset, used as a direct safety metric.
+    \item \textbf{Jaccard Index:} The ratio of the intersection to the union of predicted and ground-truth drug sets.
+    \item \textbf{Micro and Macro F1, Precision, Recall:} Standard multi-label classification metrics aggregated at both the instance and class levels.
+    \item \textbf{Hamming Loss:} The fraction of label positions incorrectly predicted across all samples.
+    \item \textbf{Subset Accuracy:} The fraction of samples for which the predicted label set exactly matches the ground-truth set.
+    \item \textbf{ROC-AUC (micro):} Area under the receiver operating characteristic curve, aggregated across all drug classes.
+    \item \textbf{PR-AUC:} Area under the precision--recall curve, computed via sample-averaged average precision.
+    \item \textbf{Precision@$K$, Recall@$K$, F1@$K$:} Top-$k$ ranking metrics evaluating the quality of the top-5 predicted medications per patient.
+    \item \textbf{DDI Rate:} The fraction of predicted drug pairs within the top-$k$ recommendations that correspond to known adverse interactions in the DDI reference dataset, serving as a direct measure of recommendation safety.
 \end{itemize}
 
-Top-$K$ sensitivity was additionally evaluated for $k \in \{1, 3, 5, 10\}$ to assess ranking quality across different recommendation list lengths.
+Top-$k$ sensitivity was additionally evaluated for $k \in \{1, 3, 5, 10\}$ to assess ranking quality across recommendation list lengths of varying breadth.
