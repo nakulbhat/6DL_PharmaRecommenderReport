@@ -1,0 +1,255 @@
+\documentclass[conference,onecolumn]{IEEEtran}
+\IEEEoverridecommandlockouts
+
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{balance}
+\usepackage{url}
+\usepackage{lipsum}
+\usepackage{stfloats}
+\usepackage{placeins}
+
+\makeatletter
+\renewcommand{\footnotesize}{\normalsize}
+\makeatother
+
+
+\begin{document}
+
+\title{Deep Learning-Based Medication Recommendation System for Primary Care Decision Support}
+
+\author{
+\IEEEauthorblockN{Arnav Sahu\IEEEauthorrefmark{1},
+Hrithiq Gupta\IEEEauthorrefmark{1},
+Pratyush Bhagat\IEEEauthorrefmark{1}}
+\IEEEauthorblockA{\IEEEauthorrefmark{1}Department of Computer Science and Engineering\\
+Manipal Institute of Technology, Manipal, India\\
+Email: arnav5.mitmpl2023@learner.manipal.edu, hrithiq.mitmpl2023@learner.manipal.edu, pratyush3.mitmpl2023@learner.manipal.edu}
+}
+
+\maketitle
+
+
+
+\begin{abstract}
+Medication recommendation in outpatient environments is a multi-label decision problem that must balance efficacy, patient-specific constraints and drug–drug safety. This paper (1) presents a detailed, paraphrased and survey of twenty important studies in representation learning, temporal modeling, graph-based drug recommendation and interpretability; (2) synthesizes findings and gaps; and (3) proposes a hybrid outpatient-focused deep learning architecture with integrated safety filtering and local explanations.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Medication recommendation, clinical decision support, graph neural networks, transformer, interpretability.
+\end{IEEEkeywords}
+
+\section{Introduction}
+
+Modern medication prescribing is a complex clinical decision-making process that requires balancing therapeutic efficacy, patient-specific constraints, dosage considerations, and potential adverse drug interactions. Physicians must select from thousands of available drug options while accounting for comorbidities, demographics, and safety risks. This cognitive burden often leads to variability in prescribing patterns and increases the risk of suboptimal or unsafe medication combinations. As electronic health records (EHRs) have become widely available, researchers have increasingly explored data-driven approaches to assist in medication recommendation and clinical decision support.
+
+Deep learning (DL) methods have demonstrated strong capability in modeling complex, high-dimensional healthcare data. Early work such as \textit{Doctor AI} \cite{choi2016doctorai} employed recurrent neural networks (RNNs) over longitudinal EHR data to predict future diagnoses and medication categories. By learning temporal patient embeddings from sequences of visits, these models captured disease progression patterns and improved multi-label prediction performance. Similarly, \textit{RETAIN} \cite{choi2016retain} introduced a reverse-time attention mechanism that enhanced interpretability while maintaining strong predictive accuracy. By assigning attention weights to past visits and clinical variables, RETAIN allowed clinicians to better understand model reasoning, addressing a key concern in deploying deep learning systems in healthcare.
+
+Beyond sequence modeling, recent research has incorporated graph-based representations and external medical knowledge to improve safety and robustness. \textit{GAMENet} \cite{shang2019gamenet} integrated patient history encoding with a Graph Convolutional Network (GCN) operating over drug--drug interaction (DDI) graphs. By explicitly modeling adverse drug interactions, GAMENet reduced unsafe medication combinations while preserving recommendation accuracy. Other approaches, such as \textit{SafeDrug} \cite{lee2021safedrug}, leveraged molecular graph encoders to capture chemical substructures and improve DDI-aware predictions. These advances illustrate how deep architectures can combine temporal modeling, graph neural networks, and domain knowledge to enhance both effectiveness and safety in medication recommendation systems.
+
+However, most existing approaches assume rich, longitudinal EHR data typically available in tertiary-care or inpatient hospital settings. In contrast, outpatient and primary-care environments often involve sparse data, limited historical visits, and short free-text symptom descriptions. Many encounters consist of a single visit with minimal structured history, which reduces the effectiveness of purely sequential models. Furthermore, outpatient medication guidance must explicitly prioritize safety, ensuring that predicted drug combinations minimize harmful interactions even when historical context is limited.
+
+In this work, we address these challenges by conducting a focused survey of deep learning-based medication recommendation systems, with particular emphasis on safety modeling, interpretability, and applicability to data-sparse outpatient settings. Based on identified gaps, we propose a hybrid deep learning architecture that integrates attention-based symptom encoding, structured feature fusion, and DDI-aware safety filtering. Our objective is to design a medication recommendation framework that balances predictive performance, safety constraints, and interpretability, making it suitable for primary-care clinical decision support.
+
+
+\section{Literature Review}
+
+Recent research on medication recommendation systems has increasingly leveraged deep learning to address the complexity, scale, and safety requirements of clinical decision-making. Early approaches focused on sequential modeling of electronic health records (EHRs) using recurrent neural networks to capture temporal disease progression and prescribing patterns. More recent developments have incorporated attention mechanisms, graph neural networks, and knowledge-based constraints to improve interpretability and reduce adverse drug--drug interactions. In parallel, transformer-based language models and transfer learning techniques have shown strong performance in extracting clinically meaningful representations from short, unstructured symptom text. Together, these trends reflect a shift toward hybrid architectures that combine temporal modeling, structured medical knowledge, and explainable AI to produce safer and more reliable medication recommendations, particularly in data-sparse healthcare settings.
+
+
+\subsection{DP-CRNN: CNN–RNN for pre-diagnosis (Zhou et al.)}
+Zhou et al. propose a double-pooling CRNN that first extracts n-gram semantics via convolutional filters, then models sequential patterns with recurrent layers and applies a second pooling step to emphasize salient temporal features. They additionally use clustering to reduce diagnostic candidate sets before classification, which improves precision on short, noisy patient queries. The architecture is well-suited to consumer-style inputs but does not extend to multi-drug prescription directly.
+
+\subsection{Deep Patient (Miotto et al.)}
+Miotto et al. train stacked denoising autoencoders on large EHR collections to produce latent patient vectors usable in downstream prediction tasks. The approach demonstrates that unsupervised representation learning captures clinically meaningful structure, improving disease onset prediction. It treats records as aggregated features rather than explicit sequences and lacks temporal ordering modeling.
+
+\subsection{Doctor AI (Choi et al.)}
+Doctor AI uses recurrent neural networks on sequences of visits to forecast diagnoses and medications. It highlights the importance of sequential modeling for clinical events; however, interpretability is limited and the model does not account explicitly for drug–drug interactions.
+
+\subsection{RETAIN (Choi et al.)}
+RETAIN introduces a reverse-time attention mechanism that affords clinicians interpretable importance scores for historical events. The model offers improved transparency compared to black-box RNNs but was not explicitly designed for multi-drug safety constraints.
+
+\subsection{GAMENet (Shang et al.)}
+GAMENet combines a memory-augmented patient encoder with graph-augmented drug representations to recommend medication sets while reducing harmful combinations. The model integrates drug–drug interaction (DDI) knowledge into its decoding process. Its dependency on rich EHR data limits direct applicability to sparse outpatient inputs.
+
+\subsection{SafeDrug (Lee et al.)}
+SafeDrug employs molecular graph encoders to capture chemical substructures and merges them with clinical context for safer recommendations. By modeling molecular features, it reduces adverse interactions but increases computational overhead and requires molecular data availability.
+
+\subsection{GRAM (Choi et al.)}
+GRAM enhances representation by injecting hierarchical medical ontology structure (e.g., ICD tree) via graph attention, improving performance on rare codes. The approach depends on curated ontologies and may not generalize when ontologies are incomplete.
+
+\subsection{LEAP (Zhang et al.)}
+LEAP frames multi-drug prescription as an optimization balancing efficacy and safety for multimorbid patients. It models combinations directly and uses outcome-based objectives, but requires long-term outcome labels rarely available in outpatient datasets.
+
+\subsection{Molecular/Substructure models (MoleRec)}
+Molecular-focused methods use message-passing networks to learn drug representations from chemical graphs. They aid in predicting interactions and complement KG-based approaches; however, they add model complexity and data requirements.
+
+\subsection{ClinicalBERT / Transformer-based models}
+Clinical adaptations of BERT produce strong contextual embeddings for clinical notes. These models excel at capturing symptom semantics from free text but require domain-specific pretraining and are computationally heavy.
+
+\subsection{Memory-Augmented Networks}
+Memory networks store past visit vectors to inform current recommendations, effective for chronic recurring conditions. These models assume sufficient patient history, which is often missing in outpatient use-cases.
+
+\subsection{Hierarchical Attention (HAN)}
+Hierarchical attention models process multi-granular text (words $\rightarrow$ sentences) and highlight clinically relevant passages for interpretability, beneficial for clinician-facing explanations.
+
+\subsection{GRU-D (Che et al.)}
+GRU-D incorporates missingness masking and decay mechanisms tailored for real-world clinical time series with irregular sampling, improving robustness for lab/vital-based predictions.
+
+\subsection{Polypharmacy Side-Effect Modeling (Zitnik et al.)}
+This line of work models adverse outcomes of drug combinations using graph neural approaches on drug–drug networks, enabling direct estimation of harmful interaction probabilities.
+
+\subsection{Transfer Learning for Clinical NLP}
+Pretrained models and transfer techniques show strong gains when labeled data are scarce, enabling better performance for symptom-to-disease mapping from small outpatient datasets.
+
+\subsection{Multi-Task and Multi-Label Models}
+Multi-task architectures jointly predict diagnoses, urgency, and medication sets, exploiting shared structure to improve each task’s performance. Proper task weighting is crucial to avoid negative transfer.
+
+\subsection{Reinforcement Learning for Treatment Policies}
+Reinforcement learning (RL) frameworks optimize sequential treatment decisions for long-term outcomes. RL requires longitudinal reward signals and carries safety concerns if deployed naively.
+
+\subsection{Explainable AI (LIME/SHAP)}
+Model-agnostic local explanation tools (LIME, SHAP) provide instance-level rationales that increase transparency but can misrepresent complex model reasoning; integrating graph- or rule-based explanations yields stronger clinical trust.
+
+\subsection{Knowledge Graph Embedding Approaches}
+Knowledge graph embeddings connect diseases, drugs, and procedures in a structured latent space, supporting reasoning about indications and contraindications. They require curation and harmonization across sources.
+
+\subsection{Large Clinical Transformer Architectures}
+Recent large-scale transformer architectures trained on mixed clinical signals (notes + structured) achieve state-of-the-art performance on multi-label prediction but demand significant compute and careful privacy considerations.
+
+
+In summary, the surveyed literature demonstrates significant progress in applying deep learning to medication recommendation, spanning sequential models, attention-based architectures, graph neural networks, molecular representations, and large-scale transformers. While many approaches achieve strong predictive performance, most rely on dense longitudinal EHR data and are tailored to inpatient or ICU settings. Safety-aware models incorporating drug--drug interaction knowledge have emerged, yet often at the cost of increased architectural complexity or data requirements. Moreover, interpretability and outpatient generalization remain open challenges. These limitations highlight the need for lightweight, safety-aware, and explainable deep learning frameworks that can operate effectively under sparse data conditions typical of primary-care environments.
+
+
+
+\begin{table}[h]
+\centering
+\caption{Key properties of the twenty surveyed studies (paraphrased).}
+\label{tab:comparison}
+\begin{tabularx}{\textwidth}{@{}l l X X X X@{}}
+\toprule
+\textbf{#} & \textbf{Study / Year} & \textbf{Architecture} & \textbf{Primary Data} & \textbf{Safety Modeling} & \textbf{Main Limitation} \\
+\midrule
+1 & DP-CRNN (Zhou et al., 2021) & CNN + RNN (double-pooling) & Short symptom text & No & Not drug-centric \\
+2 & Deep Patient (Miotto et al., 2016) & Stacked autoencoders & EHR (structured) & No & Static representations \\
+3 & Doctor AI (Choi et al., 2016) & RNN & Visit sequences & No & Low interpretability \\
+4 & RETAIN (Choi et al., 2016) & RNN + reverse-time attention & EHR seq. & No & Not drug-aware \\
+5 & GAMENet (Shang et al., 2019) & GNN + Memory & EHR + DDI graph & Yes (DDI-aware) & Needs dense EHR \\
+6 & SafeDrug (Lee et al., 2021) & Molecular GNNs & Drug graphs + EHR & Yes (molecular) & Compute-heavy \\
+7 & GRAM (Choi et al., 2017) & GAT over ontology & EHR + ontology & Partial & Ontology-dependency \\
+8 & LEAP (Zhang et al., 2017) & Optimization + Seq models & EHR & Partial & Requires outcome labels \\
+9 & MoleRec (various, 2022–23) & Message-passing GNNs & Molecular substructures & Yes & Complex training \\
+10 & ClinicalBERT (Alsentzer et al., 2019) & Transformer (BERT) & Clinical notes & No & Pretrain cost \\
+11 & MemoryNet (Wang et al., 2019) & Memory-augmented NN & Visit history & No & Needs history \\
+12 & HAN (Yang et al., 2016) & Hierarchical attention & Clinical text & No & Complex \\
+13 & GRU-D (Che et al., 2018) & GRU with decay & Irregular time-series & No & Focused on vitals/labs \\
+14 & Polypharmacy GNN (Zitnik et al., 2018) & GNN & Drug–drug network & Yes & Graph quality sensitive \\
+15 & Transfer clinical NLP (Lee et al., 2020) & Pretrained embeddings & Text & No & Domain shift issues \\
+16 & Multi-task CDSS (Harutyunyan et al., 2019) & Multi-task DNN & ICU time-series & Partial & ICU-focused \\
+17 & RL for treatments (Komorowski et al., 2018) & RL policies & Longitudinal EHR & Partial & Safety / reward design \\
+18 & LIME/SHAP explainability (Ribeiro/Lundberg) & Model-agnostic explainers & Any model & No (explain only) & Approximate explanations \\
+19 & Knowledge Graph Embeddings (various) & KG embeddings & KG (disease/drug) & Yes (KG rules) & KG curation needed \\
+20 & Large Clinical Transformers (2020–22) & Transformers & Mixed (notes+EHR) & Partial & Resource intensive \\
+\bottomrule
+\end{tabularx}
+\FloatBarrier
+\end{table}
+
+
+
+\section{Research Gaps}
+From the above analyses we identify persistent gaps:
+\begin{itemize}
+\item \textbf{Outpatient generalization:} Most safety-aware methods assume lengthy EHR histories; outpatient inputs are short and sparse.
+\item \textbf{Integrated safety + explainability:} Few systems simultaneously provide DDI-aware decisions and human-interpretable rationales.
+\item \textbf{Dosage and demographic adaptation:} Most research suggests drugs but not patient-specific dose ranges adjusted for weight/age/kidney function.
+\end{itemize}
+
+\section{Objectives}
+
+The primary objectives of this work are:
+
+\begin{itemize}
+\item To conduct a comprehensive survey of deep learning–based medication recommendation systems, focusing on safety modeling, interpretability, and data requirements.
+\item To analyze the limitations of existing approaches, particularly their dependence on dense longitudinal EHR data.
+\item To identify research gaps relevant to outpatient and primary-care environments with sparse clinical inputs.
+\item To propose a hybrid deep learning architecture that integrates symptom encoding, structured patient features, and drug–drug interaction safety constraints.
+\item To design a system that balances predictive accuracy, medication safety, and model interpretability for practical clinical decision support.
+\end{itemize}
+
+
+\section{Proposed Architecture}
+We propose a modular system:
+\begin{enumerate}
+\item \textbf{Preprocessing:} Spell correction, abbreviation expansion, symptom normalization.
+\item \textbf{Symptom Encoder:} Lightweight transformer tuned on clinical short-text (or DP-CRNN alternative for low-resource settings).
+\item \textbf{Structured Features:} Demographics, comorbid flags, basic vitals if provided.
+\item \textbf{Fusion \& Multi-Label Head:} Concatenate embeddings and predict drug classes with sigmoid outputs and label-correlation regularizer.
+\item \textbf{Safety Layer:} Rule-based + learned DDI filter (twosides/DrugBank) to remove or down-rank unsafe pairs.
+\item \textbf{Explainability:} LIME/SHAP for the classifier + KG/edge trace for safety decisions.
+\end{enumerate}
+
+
+
+\section{Evaluation Plan}
+\begin{itemize}
+\item \textbf{Data:} Synthea synthetic outpatient encounters, augmented symptom–disease datasets, curated DrugBank/TWOSIDES for safety.
+\item \textbf{Metrics:} Disease-prediction (accuracy, macro-F1), medication recommendation (Jaccard index, MAP), DDI rate, clinician-rated explanation utility.
+\item \textbf{Ablation:} Encoder ablation, safety-layer ablation, explanation fidelity tests.
+\end{itemize}
+
+\section{Conclusion}
+We provide a practical hybrid architecture for outpatient medication recommendation that prioritizes safety and explainability. Future work will implement the pipeline, run empirical evaluations with clinician reviewers, and iterate on safety constraints.
+
+\balance
+
+\begin{thebibliography}{00}
+
+\bibitem{zhou2021dpcrnn} X. Zhou, Y. Li and W. Liang, ``CNN-RNN Based Intelligent Recommendation for Online Medical Pre-Diagnosis Support,'' \textit{IEEE Trans. Emerg. Topics Comput.}, 2021.
+
+\bibitem{miotto2016deep} R. Miotto, L. Li, B. A. Kidd and J. T. Dudley, ``Deep Patient: An unsupervised representation to predict the future of patients from the electronic health records,'' \textit{Scientific Reports}, vol. 6, p. 26094, 2016.
+
+\bibitem{choi2016doctorai} E. Choi et al., ``Doctor AI: Predicting Clinical Events via Recurrent Neural Networks,'' \textit{MLHC}, 2016.
+
+\bibitem{choi2016retain} E. Choi et al., ``RETAIN: An interpretable predictive model for healthcare using reverse time attention mechanism,'' NeurIPS, 2016.
+
+\bibitem{shang2019gamenet} J. Shang et al., ``GAMENet: Graph Augmented Memory Networks for Recommending Medication Combination,'' \textit{KDD}, 2019.
+
+\bibitem{lee2021safedrug} W. Lee et al., ``SafeDrug: Dual molecular graph encoders for safe drug recommendations,'' \textit{The Web Conference (WWW)}, 2021.
+
+\bibitem{choi2017gram} E. Choi et al., ``GRAM: Graph-based attention model,'' \textit{KDD}, 2017.
+
+\bibitem{zhang2017leap} Y. Zhang et al., ``LEAP: Learning to prescribe effective and safe treatment combinations for multimorbidity,'' \textit{KDD}, 2017.
+
+\bibitem{moleRec} N. (various), ``MoleRec and molecular GNN approaches,'' \textit{WWW/ICML Papers}, 2022--2023.
+
+\bibitem{alsentzer2019clinicalbert} E. Alsentzer et al., ``Publicly available clinical BERT embeddings,'' \textit{NAACL ClinicalNLP}, 2019.
+
+\bibitem{wang2019memory} J. Wang et al., ``Memory-augmented models for sequential recommendation,'' AAAI, 2019.
+
+\bibitem{yang2016han} Z. Yang et al., ``Hierarchical attention networks for document classification,'' NAACL, 2016.
+
+\bibitem{che2018grud} Z. Che et al., ``Recurrent neural networks for multivariate time series with missing values,'' \textit{Scientific Reports}, 2018.
+
+\bibitem{zitnik2018polypharmacy} M. Zitnik et al., ``Modeling polypharmacy side effects with graph convolutional networks,'' \textit{Bioinformatics}, 2018.
+
+\bibitem{lee2020transfer} J. Lee et al., ``Transfer learning for clinical NLP,'' \textit{Scientific Reports}, 2020.
+
+\bibitem{harutyunyan2019multitask} H. Harutyunyan et al., ``Multitask learning and benchmarking with clinical time series data,'' \textit{Scientific Data}, 2019.
+
+\bibitem{komorowski2018rl} M. Komorowski et al., ``The Artificial Intelligence Clinician learns optimal treatment strategies for sepsis in intensive care,'' \textit{Nature Medicine}, 2018.
+
+\bibitem{ribeiro2016lime} M. T. Ribeiro, S. Singh and C. Guestrin, ``"Why should I trust you?": Explaining the predictions of any classifier,'' \textit{KDD}, 2016.
+
+\bibitem{kg_embeddings} (Representative) Various works on knowledge graph embeddings for clinical entities, 2017--2022.
+
+\bibitem{transformer_clinical2022} K. Huang et al., ``Large clinical transformer models,'' 2022.
+
+\end{thebibliography}
+
+\end{document}

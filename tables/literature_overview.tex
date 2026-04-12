@@ -1,0 +1,31 @@
+\begin{table}
+\centering
+\caption{Key properties of the twenty surveyed studies (paraphrased).}
+\label{tab:comparison}
+\begin{tabularx}{\textwidth}{@{}l l X X X X@{}}
+\toprule
+\textbf{\#} & \textbf{Study / Year} & \textbf{Architecture} & \textbf{Primary Data} & \textbf{Safety Modeling} & \textbf{Main Limitation} \\
+\midrule
+1 & DP-CRNN (Zhou et al., 2021) & CNN + RNN (double-pooling) & Short symptom text & No & Not drug-centric \\
+2 & Deep Patient (Miotto et al., 2016) & Stacked autoencoders & EHR (structured) & No & Static representations \\
+3 & Doctor AI (Choi et al., 2016) & RNN & Visit sequences & No & Low interpretability \\
+4 & RETAIN (Choi et al., 2016) & RNN + reverse-time attention & EHR seq. & No & Not drug-aware \\
+5 & GAMENet (Shang et al., 2019) & GNN + Memory & EHR + DDI graph & Yes (DDI-aware) & Needs dense EHR \\
+6 & SafeDrug (Lee et al., 2021) & Molecular GNNs & Drug graphs + EHR & Yes (molecular) & Compute-heavy \\
+7 & GRAM (Choi et al., 2017) & GAT over ontology & EHR + ontology & Partial & Ontology-dependency \\
+8 & LEAP (Zhang et al., 2017) & Optimization + Seq models & EHR & Partial & Requires outcome labels \\
+9 & MoleRec (various, 2022–23) & Message-passing GNNs & Molecular substructures & Yes & Complex training \\
+10 & ClinicalBERT (Alsentzer et al., 2019) & Transformer (BERT) & Clinical notes & No & Pretrain cost \\
+11 & MemoryNet (Wang et al., 2019) & Memory-augmented NN & Visit history & No & Needs history \\
+12 & HAN (Yang et al., 2016) & Hierarchical attention & Clinical text & No & Complex \\
+13 & GRU-D (Che et al., 2018) & GRU with decay & Irregular time-series & No & Focused on vitals/labs \\
+14 & Polypharmacy GNN (Zitnik et al., 2018) & GNN & Drug–drug network & Yes & Graph quality sensitive \\
+15 & Transfer clinical NLP (Lee et al., 2020) & Pretrained embeddings & Text & No & Domain shift issues \\
+16 & Multi-task CDSS (Harutyunyan et al., 2019) & Multi-task DNN & ICU time-series & Partial & ICU-focused \\
+17 & RL for treatments (Komorowski et al., 2018) & RL policies & Longitudinal EHR & Partial & Safety / reward design \\
+18 & LIME/SHAP explainability (Ribeiro/Lundberg) & Model-agnostic explainers & Any model & No (explain only) & Approximate explanations \\
+19 & Knowledge Graph Embeddings (various) & KG embeddings & KG (disease/drug) & Yes (KG rules) & KG curation needed \\
+20 & Large Clinical Transformers (2020–22) & Transformers & Mixed (notes+EHR) & Partial & Resource intensive \\
+\bottomrule
+\end{tabularx}
+\end{table}

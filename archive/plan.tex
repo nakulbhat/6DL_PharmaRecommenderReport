@@ -1,0 +1,23 @@
+\section{Objectives}
+
+The primary objectives of this work are:
+
+\begin{itemize}
+\item To conduct a comprehensive survey of deep learning–based medication recommendation systems, focusing on safety modeling, interpretability, and data requirements.
+\item To analyze the limitations of existing approaches, particularly their dependence on dense longitudinal EHR data.
+\item To identify research gaps relevant to outpatient and primary-care environments with sparse clinical inputs.
+\item To propose a hybrid deep learning architecture that integrates symptom encoding, structured patient features, and drug–drug interaction safety constraints.
+\item To design a system that balances predictive accuracy, medication safety, and model interpretability for practical clinical decision support.
+\end{itemize}
+
+
+\section{Proposed Architecture}
+We propose a modular system:
+\begin{enumerate}
+\item \textbf{Preprocessing:} Spell correction, abbreviation expansion, symptom normalization.
+\item \textbf{Symptom Encoder:} Lightweight transformer tuned on clinical short-text (or DP-CRNN alternative for low-resource settings).
+\item \textbf{Structured Features:} Demographics, comorbid flags, basic vitals if provided.
+\item \textbf{Fusion \& Multi-Label Head:} Concatenate embeddings and predict drug classes with sigmoid outputs and label-correlation regularizer.
+\item \textbf{Safety Layer:} Rule-based + learned DDI filter (twosides/DrugBank) to remove or down-rank unsafe pairs.
+\item \textbf{Explainability:} LIME/SHAP for the classifier + KG/edge trace for safety decisions.
+\end{enumerate}
