@@ -7,10 +7,55 @@
   \note{MLP lowest absolute loss but simpler model. FusionNet starts high, converges fast once text encoder stabilizes -- key sign the dual-branch design works.}
 \end{frame}
 
-\begin{frame}{Multi-Label Classification Performance}
-  \input{tables/results_model_metrics.tex}
-  \note{FusionNet wins on Jaccard, F1, subset accuracy. MLP competitive on precision but poor subset accuracy -- flat features can't capture drug co-occurrence structure. Macro-F1 low across the board due to class imbalance -- expected, not a concern.}
+\begin{frame}{Model Performance — Micro and Macro Metrics}
+\begin{table}[]
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Model} & \textbf{Jaccard} & \textbf{Precision$_\mu$} & \textbf{Recall$_\mu$} & \textbf{F1$_\mu$}      \\ \midrule
+MLP            & 0.6887           & 0.8853                   & 0.7561                & 0.8156                 \\
+CNN            & 0.7657           & 0.9031                   & 0.8342                & 0.8673                 \\
+BiLSTM         & 0.7796           & 0.9218                   & 0.8348                & 0.8762                 \\
+SelfAttention  & 0.7684           & 0.9022                   & 0.8382                & 0.8691                 \\
+FusionNet      & 0.7869           & 0.9252                   & 0.8404                & 0.8808                 \\ \midrule
+\textbf{Model} & \textbf{Hamming} & \textbf{Recall$_M$}      & \textbf{F1$_M$}       & \textbf{Precision$_M$} \\ \midrule
+MLP            & 0.0015           & 0.0675                   & 0.0721                & 0.0781                 \\
+CNN            & 0.0011           & 0.0762                   & 0.0798                & 0.0858                 \\
+BiLSTM         & 0.0010           & 0.0777                   & 0.0821                & 0.0899                 \\
+SelfAttention  & 0.0011           & 0.0753                   & 0.0789                & 0.0864                 \\
+FusionNet      & 0.0010           & 0.0786                   & 0.0828                & 0.0898                 \\ \bottomrule
+\end{tabular}
+\end{table}
 \end{frame}
+
+\begin{frame}{Model Performance — Error and AUC}
+\begin{table}
+\centering
+\begin{tabular}{lccc}
+\toprule
+\textbf{Model} & \textbf{Subset Acc} & \textbf{ROC AUC} & \textbf{PRAUC} \\
+\midrule
+MLP           & 0.4210 & 0.9937 & 0.8372 \\
+CNN           & 0.5603 & 0.9968 & 0.8743 \\
+BiLSTM        & 0.6184 & 0.9957 & 0.8743 \\
+SelfAttention & 0.5675 & 0.9970 & 0.8764 \\
+FusionNet     & 0.6455 & 0.9964 & 0.8753 \\
+\midrule
+\textbf{Model} & \textbf{Precision@K} & \textbf{Recall@K} & \textbf{F1@K} \\
+\midrule
+MLP           & 0.6855 & 0.6329 & 0.5825 \\
+CNN           & 0.7101 & 0.6563 & 0.6042 \\
+BiLSTM        & 0.7076 & 0.6555 & 0.6028 \\
+SelfAttention & 0.7114 & 0.6573 & 0.6052 \\
+FusionNet     & 0.7079 & 0.6561 & 0.6034 \\
+\bottomrule
+\end{tabular}
+\end{table}
+\end{frame}
+
+% \begin{frame}{Multi-Label Classification Performance}
+%   \input{tables/results_model_metrics.tex}
+%   \note{FusionNet wins on Jaccard, F1, subset accuracy. MLP competitive on precision but poor subset accuracy -- flat features can't capture drug co-occurrence structure. Macro-F1 low across the board due to class imbalance -- expected, not a concern.}
+% \end{frame}
 
 \begin{frame}{Key Takeaways}
   \begin{itemize}

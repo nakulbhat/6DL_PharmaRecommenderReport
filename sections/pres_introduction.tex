@@ -17,28 +17,54 @@
   \note{Set the stage -- prescribing is hard, mistakes happen, and EHRs give us the data to do something about it.}
 \end{frame}
 
-\begin{frame}{Prior Work: Sequential \& Attention Models}
-  \begin{itemize}
-    \item \textbf{Doctor AI} \cite{choi2016doctorai} -- RNNs over longitudinal EHR visits for diagnosis/medication prediction
-    \pause
-    \item \textbf{RETAIN} \cite{choi2016retain} -- Reverse-time attention for interpretable predictions
-    \begin{itemize}
-      \item Assigns weights to prior visits and clinical variables
-      \item Transparency matters for clinical deployment
-    \end{itemize}
-  \end{itemize}
-  \note{Briefly mention these -- audience likely won't know them. Stress that interpretability is a practical concern, not just academic.}
+\begin{frame}{Surveyed Studies (1--7)}
+\small
+\begin{tabularx}{\textwidth}{@{}p{0.36\textwidth} l l X@{}}
+\toprule
+\textbf{Study / Year} & \textbf{Arch.} & \textbf{Safety} & \textbf{Limitation} \\
+\midrule
+DP-CRNN (2021) \cite{zhou2021dpcrnn} & CNN+RNN & No & Not drug-centric \\
+Deep Patient (2016) \cite{miotto2016deep} & Autoenc. & No & Static reps \\
+Doctor AI (2016) \cite{choi2016doctorai} & RNN & No & Low interpretability \\
+RETAIN (2016) \cite{choi2016retain} & Attn-RNN & No & Not drug-aware \\
+GAMENet (2019) \cite{shang2019gamenet} & GNN+Mem & Yes & Dense EHR needed \\
+SafeDrug (2021) \cite{lee2021safedrug} & Mol-GNN & Yes & Compute heavy \\
+GRAM (2017) \cite{choi2017gram} & Ontology GAT & Partial & Ontology dependent \\
+\bottomrule
+\end{tabularx}
 \end{frame}
 
-\begin{frame}{Prior Work: Graph \& Safety-Aware Models}
-  \begin{itemize}
-    \item \textbf{GAMENet} \cite{shang2019gamenet} -- Patient history + GCN over DDI graphs
-    \pause
-    \item \textbf{SafeDrug} \cite{lee2021safedrug} -- Molecular graph encoders for chemical substructure \& DDI-aware prediction
-    \pause
-    \item Common thread: temporal modeling + graph neural networks + domain knowledge
-  \end{itemize}
-  \note{Quick overview -- the point is that the field has been moving toward safety-awareness. No need to go deep on any one model here.}
+\begin{frame}{Surveyed Studies (8--14)}
+\small
+\begin{tabularx}{\textwidth}{@{}p{0.36\textwidth} l l X@{}}
+\toprule
+\textbf{Study / Year} & \textbf{Arch.} & \textbf{Safety} & \textbf{Limitation} \\
+\midrule
+LEAP (2017) \cite{zhang2017leap} & Opt+Seq & Partial & Needs labels \\
+MoleRec (2022–23) \cite{moleRec} & GNN & Yes & Complex training \\
+ClinicalBERT (2019) \cite{alsentzer2019clinicalbert} & Transformer & No & Pretrain cost \\
+MemoryNet (2019) \cite{wang2019memory} & Memory NN & No & Needs history \\
+HAN (2016) \cite{yang2016han} & Hier. Attn & No & Complex \\
+GRU-D (2018) \cite{che2018grud} & GRU-Decay & No & Vitals focused \\
+Polypharmacy GNN (2018) \cite{zitnik2018polypharmacy} & GNN & Yes & Graph sensitive \\
+\bottomrule
+\end{tabularx}
+\end{frame}
+
+\begin{frame}{Surveyed Studies (15--20)}
+\small
+\begin{tabularx}{\textwidth}{@{}p{0.36\textwidth} l l X@{}}
+\toprule
+\textbf{Study / Year} & \textbf{Arch.} & \textbf{Safety} & \textbf{Limitation} \\
+\midrule
+Transfer Clinical NLP (2020) \cite{lee2020transfer} & Pretrained & No & Domain shift \\
+Multi-task CDSS (2019) \cite{harutyunyan2019multitask} & Multi-DNN & Partial & ICU focused \\
+RL Treatments (2018) \cite{komorowski2018rl} & RL & Partial & Reward design \\
+LIME / SHAP \cite{ribeiro2016lime} & Explainers & No & Approximate \\
+KG Embeddings \cite{kg_embeddings} & KG models & Yes & KG curation \\
+Clinical Transformers (2022) \cite{transformer_clinical2022} & Transformer & Partial & Resource heavy \\
+\bottomrule
+\end{tabularx}
 \end{frame}
 
 \begin{frame}{The Gap: Outpatient \& Data-Sparse Settings}
