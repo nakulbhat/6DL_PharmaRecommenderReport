@@ -1,0 +1,69 @@
+% arara: lualatex: {shell: yes}
+% arara: biber
+% arara: lualatex: {shell: yes}
+% arara: lualatex: {shell: yes}
+
+\documentclass{BetterPresentation}
+
+\usepackage{booktabs}
+\usepackage{ragged2e}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{pgfplots}
+\usepackage{balance}
+\usepackage{url}
+\usepackage{lipsum}
+\usepackage{enumitem}
+\usepackage{stfloats}
+\usepackage{placeins}
+
+
+\usepackage[backend=biber]{biblatex}
+\addbibresource{./references.bib}
+
+                \title[Medicine Recommendation System]{Deep Learning-Based Medication Recommendation System for Primary Care Decision Support}
+                \author[Sahu, Gupta, Bhat and Bhagat]{
+                    \texorpdfstring{%
+                        \begin{columns}
+                            \column{.45\linewidth}
+                            \centering
+                            Arnav Sahu\\230960000
+                            \column{.45\linewidth}
+                            \centering
+                            Hrithiq Gupta\\230962154
+                        \end{columns} 
+                        \vspace{2em}
+                        \begin{columns}
+                            \column{.45\linewidth}
+                            \centering
+                            Nakul Bhat\\230960000
+                            \column{.45\linewidth}
+                            \centering
+                            Pratyush Bhagat\\230962154
+                        \end{columns} 
+                        }
+                        {Sahu, Gupta, Bhat and Bhagat} }
+                    \institute[]{School of Computer Engineering\\Manipal Institute of Technology}
+                    \date{April 15, 2026}
+
+                    \newcommand{\gcuda}{\texttt{golicuda} }
+
+                    \begin{document}
+                    \maketitle
+                    
+
+                    \input{sections/pres_introduction.tex}
+                    \input{sections/pres_methodology.tex}
+                    \input{sections/pres_results.tex}
+                    \input{sections/pres_conclusion.tex}
+                    \begin{frame}[allowframebreaks]{References}
+                        \AtNextBibliography{\small}
+                        \printbibliography
+                    \end{frame}
+                    \end{document}

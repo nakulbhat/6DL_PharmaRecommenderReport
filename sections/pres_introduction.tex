@@ -1,0 +1,74 @@
+% -----------------------------------------------
+\section{Introduction}
+% -----------------------------------------------
+
+\begin{frame}{The Problem with Medication Prescribing}
+  \begin{itemize}
+    \item Prescribing requires balancing:
+    \begin{itemize}
+      \item Therapeutic efficacy
+      \item Contraindications \& dosage
+      \item Drug--drug interactions (DDIs)
+      \item Patient comorbidities \& demographics
+    \end{itemize}
+    \pause
+    \item EHRs create new opportunities for \textbf{data-driven clinical decision support}
+  \end{itemize}
+  \note{Set the stage -- prescribing is hard, mistakes happen, and EHRs give us the data to do something about it.}
+\end{frame}
+
+\begin{frame}{Prior Work: Sequential \& Attention Models}
+  \begin{itemize}
+    \item \textbf{Doctor AI} \cite{choi2016doctorai} -- RNNs over longitudinal EHR visits for diagnosis/medication prediction
+    \pause
+    \item \textbf{RETAIN} \cite{choi2016retain} -- Reverse-time attention for interpretable predictions
+    \begin{itemize}
+      \item Assigns weights to prior visits and clinical variables
+      \item Transparency matters for clinical deployment
+    \end{itemize}
+  \end{itemize}
+  \note{Briefly mention these -- audience likely won't know them. Stress that interpretability is a practical concern, not just academic.}
+\end{frame}
+
+\begin{frame}{Prior Work: Graph \& Safety-Aware Models}
+  \begin{itemize}
+    \item \textbf{GAMENet} \cite{shang2019gamenet} -- Patient history + GCN over DDI graphs
+    \pause
+    \item \textbf{SafeDrug} \cite{lee2021safedrug} -- Molecular graph encoders for chemical substructure \& DDI-aware prediction
+    \pause
+    \item Common thread: temporal modeling + graph neural networks + domain knowledge
+  \end{itemize}
+  \note{Quick overview -- the point is that the field has been moving toward safety-awareness. No need to go deep on any one model here.}
+\end{frame}
+
+\begin{frame}{The Gap: Outpatient \& Data-Sparse Settings}
+  \begin{itemize}
+    \item Existing models assume \textbf{rich longitudinal EHR data} (inpatient/tertiary care)
+    \pause
+    \item Outpatient reality:
+    \begin{itemize}
+      \item Sparse records, limited visit history
+      \item Brief free-text symptom descriptions
+      \item Often just \textbf{a single visit}
+    \end{itemize}
+    \pause
+    \item Safety is \emph{even more} critical without longitudinal context
+  \end{itemize}
+  \note{This is the key motivation slide. Emphasize that sequence-dependent models just don't work here -- and safety can't be an afterthought.}
+\end{frame}
+
+\begin{frame}{Our Approach}
+  \begin{itemize}
+    \item A hybrid deep learning architecture for \textbf{outpatient medication recommendation}
+    \pause
+    \item Key components:
+    \begin{itemize}
+      \item Attention-based symptom encoding
+      \item Structured feature fusion
+      \item DDI-aware safety filtering
+    \end{itemize}
+    \pause
+    \item Goals: \textbf{performance}, \textbf{safety}, and \textbf{interpretability}
+  \end{itemize}
+  \note{Transition slide into the rest of the presentation. You can forward-reference the architecture diagram here if it comes up in the next section.}
+\end{frame}

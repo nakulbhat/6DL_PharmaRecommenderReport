@@ -1,0 +1,26 @@
+% -----------------------------------------------
+\section{Results}
+% -----------------------------------------------
+
+\begin{frame}{Training Convergence}
+  \input{figures/training_loss.tex}
+  \note{MLP lowest absolute loss but simpler model. FusionNet starts high, converges fast once text encoder stabilizes -- key sign the dual-branch design works.}
+\end{frame}
+
+\begin{frame}{Multi-Label Classification Performance}
+  \input{tables/results_model_metrics.tex}
+  \note{FusionNet wins on Jaccard, F1, subset accuracy. MLP competitive on precision but poor subset accuracy -- flat features can't capture drug co-occurrence structure. Macro-F1 low across the board due to class imbalance -- expected, not a concern.}
+\end{frame}
+
+\begin{frame}{Key Takeaways}
+  \begin{itemize}
+    \item \textbf{FusionNet} best overall -- Jaccard 0.787, subset accuracy 0.646
+    \pause
+    \item \textbf{SelfAttention} best for top-$k$ retrieval -- highest PR-AUC \& Precision@$K$
+    \pause
+    \item All models ROC-AUC $> 0.993$ -- strong per-label discrimination
+    \pause
+    \item Beyond a representational threshold, \textbf{safety \& interpretability} become the key differentiators
+  \end{itemize}
+  \note{Wrap up results cleanly. The last point is a nice segue into the safety filtering and SHAP discussion.}
+\end{frame}

@@ -1,0 +1,53 @@
+% -----------------------------------------------
+\section{Discussion}
+% -----------------------------------------------
+
+\begin{frame}{What the Results Tell Us}
+  \begin{itemize}
+    \item Complexity helps -- but plateaus: FusionNet's \textbf{dual-branch fusion} is the key, not just model size
+    \pause
+    \item High ROC-AUC across all models: the symptom--medication signal is learnable even by shallow models
+    \pause
+    \item Subset accuracy gap (MLP 0.421 vs.\ FusionNet 0.646): recovering the \emph{complete} drug set is hard -- clinically, a single missed or unsafe drug matters
+    \pause
+    \item Low macro-F1 across the board: \textbf{rare drug classes} are systematically under-predicted
+  \end{itemize}
+  \note{The subset accuracy point is the most clinically meaningful -- drive this home. Macro-F1 is a known limitation of the synthetic data, not a flaw in the model.}
+\end{frame}
+
+\begin{frame}{Limitations}
+  \begin{itemize}
+    \item DDI filter applied at \textbf{data construction}, not inference -- no runtime safety measurement yet
+    \pause
+    \item Synthetic data: template-constructed text $\neq$ real clinical notes
+    \pause
+    \item Long-tail drug distribution: rare but clinically important medications under-predicted
+  \end{itemize}
+  \note{Be upfront here -- the audience will ask. The DDI rate limitation is the most important one to acknowledge.}
+\end{frame}
+
+% -----------------------------------------------
+\section{Conclusion}
+% -----------------------------------------------
+
+\begin{frame}{Conclusion}
+  \begin{itemize}
+    \item \textbf{FusionNet} best overall -- modality-aware fusion suits outpatient multi-modal data
+    \item \textbf{SelfAttention} best for top-$k$ shortlists -- useful for clinician-facing interfaces
+    \pause
+    \item DDI-aware safety filter + SHAP interpretability address trust \& safety beyond raw accuracy
+    \pause
+    \item Foundation for a \textbf{lightweight, safe, interpretable} primary-care decision support system
+  \end{itemize}
+  \note{Keep this tight. The three adjectives -- lightweight, safe, interpretable -- are the pitch.}
+\end{frame}
+
+\begin{frame}{Future Work}
+  \begin{itemize}
+    \item Evaluate on real-world clinical corpora
+    \item Runtime DDI filtering with quantifiable rate reduction
+    \item Class-imbalance strategies for rare drug prediction
+    \item Larger clinical LMs (e.g., ClinicalBERT) as drop-in encoders in FusionNet
+  \end{itemize}
+  \note{Good slide to end on -- shows the work is a starting point, not a dead end. The LM swap is a quick win worth highlighting.}
+\end{frame}
